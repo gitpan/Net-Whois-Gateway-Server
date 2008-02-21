@@ -1,0 +1,24 @@
+---
+name: Net-Whois-Gateway-Server
+version: 0.03
+author:
+  - 'Sergey Kotenko <graykot@gmail.com>'
+abstract: whois gateway
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+requires:
+  POE: 0
+  POE::Component::Client::Whois::Smart: 0
+  POE::Component::Server::TCP: 0
+  POE::Filter::Reference: 0
+  Proc::Daemon: 0
+  Proc::PID::File: 0
+provides:
+  Net::Whois::Gateway::Server:
+    file: lib/Net/Whois/Gateway/Server.pm
+    version: 0.03
+generated_by: Module::Build version 0.2808
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
