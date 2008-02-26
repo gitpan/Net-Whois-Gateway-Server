@@ -8,7 +8,7 @@ use warnings;
 use Data::Dumper;
 use POE qw(Component::Server::TCP Filter::Reference Component::Client::Whois::Smart);
     
-our $VERSION = 0.03;
+our $VERSION = 0.04;
 our $DEBUG;
 
 my @jobs;
@@ -18,7 +18,8 @@ my @local_ips;
 # starts Net::Whois::Gateway::Server
 sub start {
     my %params = @_;
-    @local_ips = @{$params{local_ips}};
+    @local_ips = @{$params{local_ips}}
+        if %params && $params{local_ips};
     
     $POE::Component::Client::Whois::Smart::DEBUG = $DEBUG;
     
@@ -33,7 +34,9 @@ sub start {
     );
 
     print "Server started in DEBUG mode\n" if $DEBUG;
-    $poe_kernel->run();    
+    $poe_kernel->run();
+    
+    return 1;
 }
 
 # got client input, starting session for new job:
@@ -65,6 +68,9 @@ sub return_result {
     };
 }
 
+sub stop {
+    $poe_kernel->stop();
+}
 1;
 
 =head1 NAME
@@ -77,6 +83,7 @@ Implementation of whois gateway server based on POE::Component::Client::Whois::S
 Supports all its features.
 Communication whois gateway server implemented in Net::Whois::Gateway::Client
 This module also installs whois-gateway-d daemon in /usr/bin (or something similar, depending on your system).
+Also see scripts/init.d/whois-gateway in ditsro, which should be placed into /etc/init.d/
 
 =head1 SYNOPSIS
 
