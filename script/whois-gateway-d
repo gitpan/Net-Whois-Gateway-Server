@@ -15,7 +15,8 @@ eval 'exec /usr/bin/perl -w -S $0 ${1+"$@"}'
 #                Specify port number to start on, defaul: 54321
 #
 #          --ip /path/to/file.txt | -ip /path/to/file.txt
-#                Specify file with lisy of local IPs to use
+#                Specify file with lisy of local IPs to use.
+#                By default use all external interfaces IPs.
 #
 #      AUTHORS:  Sergey Kotenko (kot), <graykot@gmail.com>
 #
@@ -27,6 +28,7 @@ use warnings;
 
 use Proc::Daemon;
 use Net::Whois::Gateway::Server;
+use Net::Ifconfig::Wrapper;
 use Proc::PID::File;
 use Getopt::Long;
 
@@ -48,7 +50,12 @@ if ($ARGV[0] && $ARGV[0] eq "start") {
     Proc::Daemon::Init() unless $DEBUG;
     die "whois-gateway-d already running" if !$DEBUG && Proc::PID::File->running( dir => '/tmp');
     $Net::Whois::Gateway::Server::DEBUG = $DEBUG;
-    my @ips = get_ip_from_file();
+    my @ips;
+    if ($ips_file) {
+        @ips = get_ip_from_file();
+    } else {
+        @ips = get_external_interfaces_ips();
+    }
     Net::Whois::Gateway::Server::start(
         port      => $port,
         local_ips => \@ips,
@@ -87,5 +94,17 @@ sub get_ip_from_file {
     close $fh;
 
     print "Using IPs: ".join(", ", @ips)."\n";
+    return @ips;
+}
+
+sub get_external_interfaces_ips {
+    my @ips;
+    my $ifaces = Net::Ifconfig::Wrapper::Ifconfig('list', '', '', '');
+    foreach my $iface_name (keys %$ifaces) {
+        foreach my $ip (keys %{$ifaces->{$iface_name}->{inet}}) {
+            push @ips, $ip
+                if $ip &&  $ip !~ /^127\./ && $ip !~ /^192\.168\./ && $ip !~ /^10\./;
+        }
+    }
     return @ips;
 }

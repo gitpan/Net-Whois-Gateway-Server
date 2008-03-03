@@ -1,7 +1,9 @@
 #!/bin/sh
 #
 # whois-gateway:		Whois Gateway daemon
-#
+# 
+# chkconfig: 345 85 15
+# description: Whois Gateway daemon
 #
 
 # Source function library.
@@ -12,7 +14,7 @@ start()
 
         echo -n "Starting whois-gateway-d: "
 
-	/usr/bin/whois-gateway-d > /dev/null &
+	/usr/bin/whois-gateway-d start > /dev/null &
 
         echo
 }
@@ -21,9 +23,9 @@ stop()
 {
         echo -n "Shutting down whois-gateway-d: "
 
-        /usr/bin/whois-gateway-d stop
+        /usr/bin/whois-gateway-d stop > /dev/null
 
-	killall whois-gateway-d
+	killall whois-gateway-d 
 
         echo
 }

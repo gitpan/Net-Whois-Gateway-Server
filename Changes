@@ -1,3 +1,6 @@
 0.04	Feb 26 2008	Sergey Kotenko
 	- Tests added.
 	- Updated documentation.
+0.05	Mar 03 2008	Sergey Kotenko
+	- Fixed script/init.d/whois-gateway to start correctly.
+	- Use all external interfaces IPs by default in script/whois-gateway-d

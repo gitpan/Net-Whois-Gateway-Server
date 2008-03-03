@@ -8,7 +8,7 @@ use warnings;
 use Data::Dumper;
 use POE qw(Component::Server::TCP Filter::Reference Component::Client::Whois::Smart);
     
-our $VERSION = 0.04;
+our $VERSION = 0.05;
 our $DEBUG;
 
 my @jobs;

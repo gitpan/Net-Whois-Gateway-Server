@@ -5,8 +5,9 @@ WriteMakefile
           'NAME' => 'Net::Whois::Gateway::Server',
           'VERSION_FROM' => 'lib/Net/Whois/Gateway/Server.pm',
           'PREREQ_PM' => {
+                           'Net::Ifconfig::Wrapper' => '0',
                            'POE' => '0',
-                           'POE::Component::Client::Whois::Smart' => '0',
+                           'POE::Component::Client::Whois::Smart' => '0.09',
                            'POE::Component::Server::TCP' => '0',
                            'POE::Filter::Reference' => '0',
                            'Proc::Daemon' => '0',
