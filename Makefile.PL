@@ -7,7 +7,7 @@ WriteMakefile
           'PREREQ_PM' => {
                            'Net::Ifconfig::Wrapper' => '0',
                            'POE' => '0',
-                           'POE::Component::Client::Whois::Smart' => '0.09',
+                           'POE::Component::Client::Whois::Smart' => '0.11',
                            'POE::Component::Server::TCP' => '0',
                            'POE::Filter::Reference' => '0',
                            'Proc::Daemon' => '0',

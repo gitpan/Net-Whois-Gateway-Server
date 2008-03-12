@@ -4,3 +4,6 @@
 0.05	Mar 03 2008	Sergey Kotenko
 	- Fixed script/init.d/whois-gateway to start correctly.
 	- Use all external interfaces IPs by default in script/whois-gateway-d
+
+0.06	Mar 12 2008
+	- Parallel apgrade with POE::Component::Client::Whois
