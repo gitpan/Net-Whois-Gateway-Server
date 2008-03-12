@@ -1,6 +1,6 @@
 ---
 name: Net-Whois-Gateway-Server
-version: 0.06
+version: 0.07
 author:
   - 'Sergey Kotenko <graykot@gmail.com>'
 abstract: whois gateway
@@ -18,7 +18,7 @@ requires:
 provides:
   Net::Whois::Gateway::Server:
     file: lib/Net/Whois/Gateway/Server.pm
-    version: 0.06
+    version: 0.07
 generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html

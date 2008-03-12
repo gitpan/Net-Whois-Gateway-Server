@@ -8,7 +8,7 @@ use warnings;
 use Data::Dumper;
 use POE qw(Component::Server::TCP Filter::Reference Component::Client::Whois::Smart);
     
-our $VERSION = 0.06;
+our $VERSION = 0.07;
 our $DEBUG;
 
 my @jobs;
@@ -30,6 +30,7 @@ sub start {
         ClientInput  => \&got_request,
         InlineStates => {
             return_result => \&return_result,
+            return_ping   => \&return_ping,
         },
     );
 
@@ -43,6 +44,12 @@ sub start {
 sub got_request {
     my ($heap, $session, $input) = @_[HEAP, SESSION, ARG0];
     my %params = %{$input->[0]};
+    
+    if ($params{ping}) {
+        $poe_kernel->yield("return_ping");
+        return;
+    }
+    
     $tcp_server_id = $session->ID;
 
     $params{omit_msg}  = 2 unless defined $params{omit_msg};
@@ -67,6 +74,16 @@ sub return_result {
         $heap->{client}->put( $answer );
     };
 }
+
+# return result to client
+sub return_ping {
+    my $heap = $_[HEAP];
+    eval {
+        # Megahack!
+        $heap->{client}->put( [ { 1 => 1 } ] );
+    };
+}
+
 
 sub stop {
     $poe_kernel->stop();
