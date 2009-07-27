@@ -7,13 +7,15 @@ use warnings;
 
 use Data::Dumper;
 use POE qw(Component::Server::TCP Filter::Reference Component::Client::Whois::Smart);
-    
-our $VERSION = 0.07;
+
+our $VERSION = 0.08;
 our $DEBUG;
 
 my @jobs;
 my $tcp_server_id;
 my @local_ips;
+
+use Net::Whois::Raw;
 
 # starts Net::Whois::Gateway::Server
 sub start {
@@ -22,11 +24,13 @@ sub start {
         if %params && $params{local_ips};
     
     $POE::Component::Client::Whois::Smart::DEBUG = $DEBUG;
+
+    #my $filter = POE::Filter::Reference->new( 'YAML' );
     
     POE::Component::Server::TCP->new(
-        Alias => "sum_server",
+        Alias => "whois_server",
         Port         => delete $params{port} || 54321,
-        ClientFilter => "POE::Filter::Reference",
+        ClientFilter => 'POE::Filter::Reference',
         ClientInput  => \&got_request,
         InlineStates => {
             return_result => \&return_result,
@@ -44,13 +48,29 @@ sub start {
 sub got_request {
     my ($heap, $session, $input) = @_[HEAP, SESSION, ARG0];
     my %params = %{$input->[0]};
+
+    if (my $config = delete $params{default_config}) {
+	if ( exists $config->{ net_whois_raw_data } ) {
+	    my $net_whois_raw_data = delete $config->{ net_whois_raw_data };
+
+	    if ( ref $net_whois_raw_data eq 'HASH' ) {
+		Net::Whois::Raw::whois_config_data( $net_whois_raw_data );
+	    }
+	}
+
+	$heap->{default_config} = $config;
+    }
     
     if ($params{ping}) {
         $poe_kernel->yield("return_ping");
         return;
     }
-    
+
     $tcp_server_id = $session->ID;
+
+    if ( ref $heap->{default_config} eq 'HASH' ) {
+	%params = (%params, %{ $heap->{default_config} });
+    }
 
     $params{omit_msg}  = 2 unless defined $params{omit_msg};
     $params{cache_dir} = '/tmp/whois-gateway-d'
@@ -59,13 +79,14 @@ sub got_request {
         unless defined $params{cache_time};
     $params{local_ips} = \@local_ips;
 
-    delete $params{event} if $params{event};
+    #delete $params{event} if $params{event};
+	
     POE::Component::Client::Whois::Smart->whois(    
         %params,
         event => 'return_result',
     );
 
-};
+}
 
 # return result to client
 sub return_result {
@@ -80,7 +101,7 @@ sub return_ping {
     my $heap = $_[HEAP];
     eval {
         # Megahack!
-        $heap->{client}->put( [ { 1 => 1 } ] );
+        $heap->{client}->put( [ { 1 => 1, configured => exists $_[SESSION]->[OBJECT]->{default_config} } ] );
     };
 }
 

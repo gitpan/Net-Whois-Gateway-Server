@@ -40,7 +40,7 @@ GetOptions(
     '--ip|i=s'   => \$ips_file,
 );
 
-our $DEBUG = 0;
+our $DEBUG = 1;
 
 if ($ARGV[0] && $ARGV[0] eq "start") {
     
@@ -49,13 +49,13 @@ if ($ARGV[0] && $ARGV[0] eq "start") {
     # run as application if DEBUG    
     Proc::Daemon::Init() unless $DEBUG;
     die "whois-gateway-d already running" if !$DEBUG && Proc::PID::File->running( dir => '/tmp');
-    $Net::Whois::Gateway::Server::DEBUG = $DEBUG;
     my @ips;
     if ($ips_file) {
         @ips = get_ip_from_file();
     } else {
         @ips = get_external_interfaces_ips();
     }
+    $Net::Whois::Gateway::Server::DEBUG = $DEBUG;
     Net::Whois::Gateway::Server::start(
         port      => $port,
         local_ips => \@ips,
