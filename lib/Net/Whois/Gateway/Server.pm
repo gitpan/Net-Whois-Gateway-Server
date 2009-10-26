@@ -8,7 +8,7 @@ use warnings;
 use Data::Dumper;
 use POE qw(Component::Server::TCP Filter::Reference Component::Client::Whois::Smart);
 
-our $VERSION = 0.08;
+our $VERSION = 0.09;
 our $DEBUG;
 
 my @jobs;
@@ -50,14 +50,6 @@ sub got_request {
     my %params = %{$input->[0]};
 
     if (my $config = delete $params{default_config}) {
-	if ( exists $config->{ net_whois_raw_data } ) {
-	    my $net_whois_raw_data = delete $config->{ net_whois_raw_data };
-
-	    if ( ref $net_whois_raw_data eq 'HASH' ) {
-		Net::Whois::Raw::whois_config_data( $net_whois_raw_data );
-	    }
-	}
-
 	$heap->{default_config} = $config;
     }
     
@@ -69,7 +61,7 @@ sub got_request {
     $tcp_server_id = $session->ID;
 
     if ( ref $heap->{default_config} eq 'HASH' ) {
-	%params = (%params, %{ $heap->{default_config} });
+	%params = (%{ $heap->{default_config} }, %params);
     }
 
     $params{omit_msg}  = 2 unless defined $params{omit_msg};
@@ -80,7 +72,7 @@ sub got_request {
     $params{local_ips} = \@local_ips;
 
     #delete $params{event} if $params{event};
-	
+
     POE::Component::Client::Whois::Smart->whois(    
         %params,
         event => 'return_result',

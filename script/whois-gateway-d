@@ -40,6 +40,8 @@ GetOptions(
     '--ip|i=s'   => \$ips_file,
 );
 
+autoflush STDOUT 1;
+
 our $DEBUG = 1;
 
 if ($ARGV[0] && $ARGV[0] eq "start") {

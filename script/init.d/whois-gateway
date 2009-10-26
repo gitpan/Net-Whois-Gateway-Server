@@ -14,7 +14,7 @@ start()
 
 	echo -n "Starting whois-gateway-d: "
 
-	/usr/bin/whois-gateway-d start >/dev/null 2>&1 &
+	daemon --user=whois-gateway /usr/bin/whois-gateway-d start >/dev/null 2>&1 &
 
         echo
 }

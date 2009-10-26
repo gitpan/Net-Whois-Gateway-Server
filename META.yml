@@ -1,6 +1,6 @@
 ---
 name: Net-Whois-Gateway-Server
-version: 0.08
+version: 0.09
 author:
   - 'Sergey Kotenko <graykot@gmail.com>'
 abstract: whois gateway
@@ -15,11 +15,13 @@ requires:
   POE::Filter::Reference: 0
   Proc::Daemon: 0
   Proc::PID::File: 0
+configure_requires:
+  Module::Build: 0.35
 provides:
   Net::Whois::Gateway::Server:
     file: lib/Net/Whois/Gateway/Server.pm
-    version: 0.08
-generated_by: Module::Build version 0.3
+    version: 0.09
+generated_by: Module::Build version 0.35
 meta-spec:
-  url: http://module-build.sourceforge.net/META-spec-v1.2.html
-  version: 1.2
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
